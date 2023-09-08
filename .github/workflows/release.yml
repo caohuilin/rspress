@@ -87,11 +87,11 @@ jobs:
       - name: Install Pnpm
         run: corepack enable
 
-      - name: Setup Node.js 18
-        uses: actions/setup-node@v3
-        with:
-          node-version: '18'
-          cache: 'pnpm'
+      # - name: Setup Node.js 18
+      #   uses: actions/setup-node@v3
+      #   with:
+      #     node-version: '18'
+      #     cache: 'pnpm'
 
       # - name: Install npm v9
       #   run: npm install -g npm@9
@@ -124,8 +124,9 @@ jobs:
 
       - name: Trigger Modern Bump Rspress
         if: ${{github.event.inputs.version == 'latest'}}
-        uses: distributhor/workflow-webhook@v3
-        with:
-          webhook_url: https://api.github.com/repos/caohuilin/modern.js/dispatches
-          webhook_secret: ${{ secrets.WEBHOOK_SECRET }}
-          data: '{ "type": "bump_rspress" }'
+        run: |
+          curl -X POST \
+          -H 'Content-Type: application/json' \
+          -H 'Authorization: Bearer ${{ secrets.REPO_SCOPED_TOKEN }}' \
+          -d '{"ref": "main"}' \
+          https://api.github.com/repos/caohuilin/modern.js/actions/workflows/bump-rspress.yml/dispatches
