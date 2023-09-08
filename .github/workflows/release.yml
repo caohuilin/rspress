@@ -93,31 +93,39 @@ jobs:
           node-version: '18'
           cache: 'pnpm'
 
-      - name: Install npm v9
-        run: npm install -g npm@9
+      # - name: Install npm v9
+      #   run: npm install -g npm@9
 
-      - name: Turbo Cache
-        id: turbo-cache
-        uses: actions/cache@v3
+      # - name: Turbo Cache
+      #   id: turbo-cache
+      #   uses: actions/cache@v3
+      #   with:
+      #     path: .turbo
+      #     key: turbo-${{ github.ref_name }}-${{ github.sha }}
+      #     restore-keys: |
+      #       turbo-${{ github.ref_name }}-
+      #       turbo-
+
+      # - name: Install Dependencies && Build
+      #   run: pnpm install
+
+      # - name: Release
+      #   uses: web-infra-dev/actions@v2
+      #   with:
+      #     version: ${{ github.event.inputs.version }}
+      #     branch: ${{ github.event.inputs.branch }}
+      #     type: 'release'
+      #     tools: 'modern'
+      #   env:
+      #     GITHUB_TOKEN: ${{ secrets.REPO_SCOPED_TOKEN }}
+      #     NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
+      #     REPOSITORY: ${{ github.repository }}
+      #     REF: ${{ github.ref }}
+
+      - name: Trigger Modern Bump Rspress
+        if: ${{github.event.inputs.version == 'latest'}}
+        uses: distributhor/workflow-webhook@v3
         with:
-          path: .turbo
-          key: turbo-${{ github.ref_name }}-${{ github.sha }}
-          restore-keys: |
-            turbo-${{ github.ref_name }}-
-            turbo-
-
-      - name: Install Dependencies && Build
-        run: pnpm install
-
-      - name: Release
-        uses: web-infra-dev/actions@v2
-        with:
-          version: ${{ github.event.inputs.version }}
-          branch: ${{ github.event.inputs.branch }}
-          type: 'release'
-          tools: 'modern'
-        env:
-          GITHUB_TOKEN: ${{ secrets.REPO_SCOPED_TOKEN }}
-          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
-          REPOSITORY: ${{ github.repository }}
-          REF: ${{ github.ref }}
+          webhook_url: https://api.github.com/repos/caohuilin/modern.js/dispatches
+          webhook_secret: ${{ secrets.WEBHOOK_SECRET }}
+          data: '{ "type": "bump_rspress" }'
