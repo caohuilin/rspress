@@ -16,6 +16,7 @@ on:
 
 jobs:
   release:
+    permissions: write-all
     name: Create Release Pull Request
     runs-on: ubuntu-latest
     steps:
